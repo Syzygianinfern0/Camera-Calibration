@@ -13,7 +13,7 @@ objp[:, :2] = np.mgrid[0:7, 0:6].T.reshape(-1, 2)
 objpoints = []  # 3d point in real world space
 imgpoints = []  # 2d points in image plane.
 
-images = glob.glob('*.jpg')
+images = glob.glob('assets/*.jpg')
 
 for fname in images:
     img = cv2.imread(fname)
@@ -23,7 +23,7 @@ for fname in images:
     ret, corners = cv2.findChessboardCorners(gray, (7, 6), None)
 
     # If found, add object points, image points (after refining them)
-    if ret == True:
+    if ret:
         objpoints.append(objp)
 
         corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)

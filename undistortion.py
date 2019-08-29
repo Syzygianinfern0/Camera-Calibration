@@ -20,12 +20,22 @@ cv2.createTrackbar('fx', 'Bars', mtx.astype(int)[0, 0], 750, nothing)
 cv2.createTrackbar('fy', 'Bars', mtx.astype(int)[1, 1], 750, nothing)
 cv2.createTrackbar('cx', 'Bars', mtx.astype(int)[0, 2], 750, nothing)
 cv2.createTrackbar('cy', 'Bars', mtx.astype(int)[1, 2], 750, nothing)
+cv2.createTrackbar('k1', 'Bars', dist.astype(int)[0, 0], 1, nothing)
+cv2.createTrackbar('k2', 'Bars', dist.astype(int)[0, 1], 1, nothing)
+cv2.createTrackbar('p1', 'Bars', dist.astype(int)[0, 2], 1, nothing)
+cv2.createTrackbar('p2', 'Bars', dist.astype(int)[0, 3], 1, nothing)
+cv2.createTrackbar('k3', 'Bars', dist.astype(int)[0, 4], 1, nothing)
 
 
 while True:
     mtx = np.array([[cv2.getTrackbarPos('fx', 'Bars'), 0, cv2.getTrackbarPos('cx', 'Bars')],
                     [0, cv2.getTrackbarPos('fy', 'Bars'), cv2.getTrackbarPos('cx', 'Bars')],
-                    [0, 0, 1]], dtype=np.float)
+                    [0, 0, 1]],
+                   dtype=np.float)
+    dist = np.array([[cv2.getTrackbarPos('k1', 'Bars'), cv2.getTrackbarPos('k2', 'Bars'),
+                      cv2.getTrackbarPos('p1', 'Bars'), cv2.getTrackbarPos('p2', 'Bars'),
+                      cv2.getTrackbarPos('k3', 'Bars')]],
+                    dtype=np.float)
 
     # ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
     h, w = img.shape[:2]

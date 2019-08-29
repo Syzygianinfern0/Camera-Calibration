@@ -14,24 +14,27 @@ objp[:, :2] = np.mgrid[0:7, 0:6].T.reshape(-1, 2)
 objpoints = []  # 3d point in real world space
 imgpoints = []  # 2d points in image plane.
 
-images = glob.glob('assets/*.jpg')
+images = glob.glob('my_dataset/*.jpg')
 
+count = 0
 for fname in images:
     img = cv2.imread(fname)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
 
     # Find the chess board corners
-    ret, corners = cv2.findChessboardCorners(gray, (7, 6), None)
+    ret, corners = cv2.findChessboardCorners(gray, (4, 5), None)
 
     # If found, add object points, image points (after refining them)
     if ret:
+        count += 1
         objpoints.append(objp)
 
-        corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+        corners2 = cv2.cornerSubPix(gray, corners, (3, 3), (-1, -1), criteria)
         imgpoints.append(corners2)
 
         # Draw and display the corners
-        img = cv2.drawChessboardCorners(img, (7, 6), corners2, ret)
+        img = cv2.drawChessboardCorners(img, (4, 5), corners2, ret)
         cv2.imshow('img', img)
         cv2.waitKey(100)
 
@@ -39,5 +42,5 @@ cv2.destroyAllWindows()
 
 data = [objpoints, imgpoints]
 
-with open('data.pickle', 'wb') as handler:
+with open('my_dataset.pickle', 'wb') as handler:
     pickle.dump(data, handler)

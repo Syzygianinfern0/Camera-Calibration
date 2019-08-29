@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import cv2
 import pickle
 
@@ -10,21 +10,30 @@ def nothing(x):
 with open("data.pickle", "rb") as handler:
     [objpoints, imgpoints] = pickle.load(handler)
 
-img = cv2.imread('assets/left01.jpg')
+img = cv2.imread('assets/left11.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-cv2.namedWindow('bars')
-cv2.createTrackbar('alpha', 'bars', 100, 100, nothing)
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+
+cv2.namedWindow('Bars')
+cv2.createTrackbar('fx', 'Bars', mtx.astype(int)[0, 0], 750, nothing)
+cv2.createTrackbar('fy', 'Bars', mtx.astype(int)[1, 1], 750, nothing)
+cv2.createTrackbar('cx', 'Bars', mtx.astype(int)[0, 2], 750, nothing)
+cv2.createTrackbar('cy', 'Bars', mtx.astype(int)[1, 2], 750, nothing)
+
 
 while True:
-    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    mtx = np.array([[cv2.getTrackbarPos('fx', 'Bars'), 0, cv2.getTrackbarPos('cx', 'Bars')],
+                    [0, cv2.getTrackbarPos('fy', 'Bars'), cv2.getTrackbarPos('cx', 'Bars')],
+                    [0, 0, 1]], dtype=np.float)
+
+    # ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
     h, w = img.shape[:2]
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-    alpha = cv2.getTrackbarPos('alpha', 'bars') / 100.0
-    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), alpha, (w, h))
+    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
 
     # undistort
     dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
